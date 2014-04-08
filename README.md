@@ -5,10 +5,25 @@ Currently there is only one script available: Export To Plex.applescript. The pu
 to export its recordings to Plex, while preserving as much metadata as possible. To install this script:
 
 1. Open the script with the AppleScript Editor
+
 2. Configure the properties and dependencies as described in the following sections.
+
 3. Save the script to the location: 
-	/Library/Application Support/EyeTV/Scripts/TriggeredScripts/RecordingDone.scpt
+	   /Library/Application Support/EyeTV/Scripts/TriggeredScripts/RecordingDone.scpt
+
+  Alternatively, you can save the script to the location:
+    /Library/Application Support/EyeTV/Scripts/Export To Plex.scpt
+  then create a *hard* link to:
+    /Library/Application Support/EyeTV/Scripts/TriggeredScripts/RecordingDone.scpt
+  using the command:
+    ln /Library/Application\ Support/EyeTV/Scripts/Export\ To\ Plex.scpt  \
+     /Library/Application\ Support/EyeTV/Scripts/TriggeredScripts/RecordingDone.scpt
+     
+  If you go this route, you need to create a hard link (ln) rather than a symbolic link (ln -s), or the script will
+  not be recognized as a triggered script.
+
 4. You should now have a compiled version of this script that is ready to handle any newly completed recordings.
+
 5. Restart EyeTV so that it discovers the change.
 
 

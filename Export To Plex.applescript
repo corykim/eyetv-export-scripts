@@ -14,7 +14,7 @@
 #
 
 # If this property is set to true, the program is deleted once exporting is complete.
-property ENABLE_PROGRAM_DELETION : true
+property ENABLE_PROGRAM_DELETION : false
 
 # If this property is set to true, Turbo.264 will be used instead of HandBrakeCLI
 property ENABLE_TURBO_264 : false
@@ -60,9 +60,9 @@ property TEST_MODE : false
 
 # this will trigger the script when a recording is finished. To do so, place this script in the path: /Library/Application Support/EyeTV/Scripts/TriggeredScripts/RecordingDone.scpt
 on RecordingDone(recordingID)
-	tell application "EyeTV.app"
+	tell application "EyeTV"
 		set new_recording_id to (recordingID as integer)
-		set new_recording to «class cRec» id new_recording_id
+		set new_recording to recording id new_recording_id
 		if TEST_MODE then
 			my test(new_recording)
 		else
@@ -74,8 +74,8 @@ end RecordingDone
 
 # this will be triggered when manually selected from the EyeTV script menu. To do so, place this script in the path: /Library/Application Support/EyeTV/Scripts/ 
 on run
-	tell application "EyeTV.app"
-		set selected_recordings to selection of «class Prgw»
+	tell application "EyeTV"
+		set selected_recordings to selection of programs window
 		repeat with selected_recording in selected_recordings
 			if TEST_MODE then
 				my test(selected_recording)
@@ -95,7 +95,7 @@ end test
 
 
 on export_recording(the_recording)
-	tell application "EyeTV.app"
+	tell application "EyeTV"
 		set recording_location to URL of the_recording as text
 	end tell
 	
@@ -149,13 +149,13 @@ end export_recording
 on export_with_turbo_264(input_file, output_file)
 	write_log("Exporting with Turbo.264...")
 	try
-		tell application "Turbo.264 HD.app"
+		tell application "Turbo.264 HD"
 			set add_success to false
 			set attempt_count to 0
 			repeat while (add_success is not true and attempt_count < TURBO_264_MAX_ATTEMPTS)
-				if «class isEn» then
+				if isEncoding then
 					my write_log("Waiting for previous encoding job to complete...")
-					repeat while «class isEn»
+					repeat while isEncoding
 						delay 30
 					end repeat
 					my write_log("Previous encoding job has completed.")
@@ -163,7 +163,7 @@ on export_with_turbo_264(input_file, output_file)
 				try
 					set attempt_count to attempt_count + 1
 					my write_log("Initiating encoding job for " & input_file & " (Attempt #" & attempt_count & " of " & TURBO_264_MAX_ATTEMPTS & ")")
-					«event TuBoAddf» POSIX path of input_file with «class Repl» given «class Etyp»:«constant EtypCust», «class CusN»:TURBO_264_PRESET, «class Etgt»:POSIX path of output_file
+					add file POSIX path of input_file exporting as custom with custom setting TURBO_264_PRESET with destination POSIX path of output_file with replacing
 					set add_success to true
 				on error
 					my write_log("Attempt #" & attempt_count & " to add file to turbo.264 queue failed.")
@@ -172,10 +172,10 @@ on export_with_turbo_264(input_file, output_file)
 			end repeat
 			
 			if (add_success is true) then
-				«event TuBoTenc» with «class NoEr»
+				encode with no error dialogs
 				my write_log("Waiting for export to complete...")
 				
-				repeat while («class isEn» or my file_exists(output_file) is false)
+				repeat while (isEncoding or my file_exists(output_file) is false)
 					delay 1
 				end repeat
 			else
@@ -208,7 +208,7 @@ on read_xml_metadata(the_recording)
 	write_log("Reading XML metadata...")
 	
 	#find a dictionary in the same directory of the recording, with a ".eyetvp" extension
-	tell application "EyeTV.app"
+	tell application "EyeTV"
 		set recording_location to URL of the_recording as text
 		set AppleScript's text item delimiters to "."
 		set build_recording_path to text items 1 through -3 of recording_location as string
@@ -220,8 +220,8 @@ on read_xml_metadata(the_recording)
 	repeat with the_file in program_files
 		if the_file ends with ".eyetvp" then
 			set the_plist to POSIX path of build_recording_path & "/" & the_file
-			tell application "ASObjC Runner.app"
-				set the_plist to «event yÂc0yÂC0» the_plist
+			tell application "ASObjC Runner"
+				set the_plist to read plist at the_plist
 			end tell
 			write_log("Found XML metadata in " & the_file)
 			return the_plist
@@ -245,12 +245,12 @@ on tag_metadata(the_recording, the_output_file)
 	set recording_season_num to SEASONID of epg_info
 	set recording_episode_num to EPISODENUM of epg_info
 	
-	tell application "EyeTV.app"
-		set program_title to «class Titl» of the_recording
-		set the_program to «class cPrg» program_title
-		set recording_episode to «class Epis» of the_recording
-		set recording_description to «class Pdsc» of the_recording
-		set recording_station_name to «class Stnm» of the_recording
+	tell application "EyeTV"
+		set program_title to title of the_recording
+		set the_program to program program_title
+		set recording_episode to episode of the_recording
+		set recording_description to description of the_recording
+		set recording_station_name to station name of the_recording
 	end tell
 	
 	set cmd to ATOMIC_PARSLEY_CLI & " " & escape_path(the_output_file) ¬
@@ -292,7 +292,7 @@ end tag_metadata
 on delete_recording(the_recording)
 	if ENABLE_PROGRAM_DELETION then
 		write_log("Deleting recording...")
-		tell application "EyeTV.app"
+		tell application "EyeTV"
 			delete the_recording
 		end tell
 		write_log("Recording deleted.")
@@ -305,9 +305,9 @@ on build_recording_path(the_recording)
 	set epg_info to read_epg_info(the_recording)
 	set recording_season_num to SEASONID of epg_info
 	
-	tell application "EyeTV.app"
-		set program_title to «class Titl» of the_recording as text
-		set recording_year to year of («class Stim» of the_recording as date)
+	tell application "EyeTV"
+		set program_title to title of the_recording as text
+		set recording_year to year of (start time of the_recording as date)
 	end tell
 	
 	if recording_season_num is not equal to "" and recording_season_num is greater than 0 then
@@ -326,10 +326,10 @@ on build_recording_name(the_recording)
 	set recording_season_num to SEASONID of epg_info
 	set recording_episode_num to EPISODENUM of epg_info
 	
-	tell application "EyeTV.app"
-		set program_title to «class Titl» of the_recording as text
-		set recording_date to («class Stim» of the_recording) as date
-		set recording_episode to «class Epis» of the_recording as text
+	tell application "EyeTV"
+		set program_title to title of the_recording as text
+		set recording_date to (start time of the_recording) as date
+		set recording_episode to episode of the_recording as text
 	end tell
 	
 	set filename to program_title & " - "

@@ -9,6 +9,7 @@ to export its recordings to Plex, while preserving as much metadata as possible.
 3. Save the script to the location: 
 	/Library/Application Support/EyeTV/Scripts/TriggeredScripts/RecordingDone.scpt
 4. You should now have a compiled version of this script that is ready to handle any newly completed recordings.
+5. Restart EyeTV so that it discovers the change.
 
 
 Dependencies
@@ -42,7 +43,7 @@ Properties
   exported. IF a recording is not successfully exported, the recording will remain in EyeTV.
 
 * PLEX_UPDATE_URL: if given a value, the script will cause Plex to update a library. The thing you are mostly going to
-  need to change is the secion number:
+  need to change is the section number:
 
   	http://127.0.0.1:32400/library/sections/2/refresh?turbo=1
 

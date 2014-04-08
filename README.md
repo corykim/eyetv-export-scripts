@@ -126,6 +126,4 @@ Configuring Turbo.264
 Acknowledgements
 ----------------
 This script was based initially on a Handbrake export script written by Ralf Niedling.
-The original script is available at: 
-
-	http://www.niedling.info/ralf/projekte/verschiedenes/eyetv-applescript/eyetv-handbrake_en.html
+The original script is available at http://www.niedling.info/ralf/projekte/verschiedenes/eyetv-applescript/eyetv-handbrake_en.html.

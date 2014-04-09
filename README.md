@@ -4,7 +4,7 @@ eyetv-export-scripts
 Currently there is only one script available: Export To Plex.applescript. The purpose of this script is to allow EyeTV 
 to export its recordings to Plex, while preserving as much metadata as possible. To install this script:
 
-1. Open the script with the AppleScript Editor
+1. Open the script with the AppleScript Editor.
 
 2. Configure the properties and dependencies as described in the following sections.
 

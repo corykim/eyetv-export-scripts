@@ -114,8 +114,11 @@ Configuring Turbo.264
   choosing "Edit" in the "Format" drop-down.
 
 * Configure the following properties as needed:
+
   - ENABLE_TURBO_264: 		Set this to "true"
+
   - TURBO_264_PRESET:		Set this to the name of the preset that you created in the previous step.
+
   - TURBO_264_MAX_ATTEMPTS	Turbo.264 has an unusual trait that it gets confused when recordings are added at the same
   							time, and also the app does not allow additional files to be added to the queue while a
   							transcode is in progress. As a result, the script must make multiple attempts to transcode

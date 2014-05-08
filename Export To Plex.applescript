@@ -167,6 +167,7 @@ on export_with_turbo_264(input_file, output_file)
 					set add_success to true
 				on error
 					my write_log("Attempt #" & attempt_count & " to add file to turbo.264 queue failed.")
+					my write_log("Error code: " & lastErrorCode)
 					delay 30
 				end try
 			end repeat
@@ -185,6 +186,9 @@ on export_with_turbo_264(input_file, output_file)
 		write_log("Export complete.")
 	on error
 		write_log("ERROR: failed to export with Turbo.264!")
+		tell application "Turbo.264 HD"
+			my write_log("Error code: " & lastErrorCode)
+		end tell
 	end try
 end export_with_turbo_264
 
@@ -311,7 +315,7 @@ on build_recording_path(the_recording)
 	end tell
 	
 	if recording_season_num is not equal to "" and recording_season_num is greater than 0 then
-		set directory to program_title & "/S" & left_pad_number(recording_season_num, 2)
+		set directory to program_title & "/Season " & recording_season_num
 	else
 		set directory to program_title & "/" & recording_year
 	end if

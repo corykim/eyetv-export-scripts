@@ -339,7 +339,12 @@ on build_recording_name(the_recording)
 	set filename to program_title & " - "
 	
 	if recording_season_num is not equal to "" and recording_episode_num is not equal to "" and recording_season_num is greater than 0 then
-		set filename to filename & "S" & left_pad_number(recording_season_num, 2) & "E" & left_pad_number(recording_episode_num, 2)
+		if recording_episode_num < 10 then
+			set padded_episode_num to left_pad_number(recording_episode_num, 2)
+		else
+			set padded_episode_num to recording_episode_num
+		end if
+		set filename to filename & "S" & left_pad_number(recording_season_num, 2) & "E" & padded_episode_num
 	else
 		set filename to filename & format_date(recording_date)
 	end if

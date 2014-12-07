@@ -108,6 +108,7 @@ on export_recording(the_recording)
 	set input_file to recording_path & SOURCE_TYPE as string
 	
 	set output_file to my TEMP_PATH & "/" & build_recording_name(the_recording) & TARGET_TYPE as string
+	write_log("Temp file location is " & output_file)
 	
 	if ENABLE_TURBO_264 then
 		export_with_turbo_264(input_file, output_file)

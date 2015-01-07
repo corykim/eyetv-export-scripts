@@ -53,9 +53,9 @@ This script has some dependencies in order to run.
 
 * Optionally, the script uses Atomic Parsley (http://atomicparsley.sourceforge.net) to set metadata on the exported file. This is useful if Plex is unable to lookup the metadata of the file based on the filename. This feature only works with .mp4 and .m4v files.
 
-To enable Atomic Parsley, set the property “ENABLE_ATOMIC_PARSLEY” to true.
+  - To enable Atomic Parsley, set the property “ENABLE_ATOMIC_PARSLEY” to true.
 
-The script expects this program to be installed at the location "/usr/local/bin/atomicparsley". You can specify a 
+  - The script expects this program to be installed at the location "/usr/local/bin/atomicparsley". You can specify a 
   different location by setting the property "ATOMIC_PARSLEY_CLI".
 
 

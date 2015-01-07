@@ -51,16 +51,18 @@ This script has some dependencies in order to run.
   	to export the recordings. The default name of the custom preset is "Export To Plex", but you can create any custom
   	preset and supply its name in the property "TURBO_264_PRESET".
 
-* The script uses Atomic Parsley (http://atomicparsley.sourceforge.net) to set metadata on the exported file. The
-  script expects this program to be installed at the location "/usr/local/bin/atomicparsley". You can specify a 
-  different location by setting the property "ATOMIC_PARSLEY_CLI".
+* Optionally, the script uses Atomic Parsley (http://atomicparsley.sourceforge.net) to set metadata on the exported file. This is useful if Plex is unable to lookup the metadata of the file based on the filename. This feature only works with .mp4 and .m4v files.
 
-* The script uses ASObjC Runner (http://www.macosxautomation.com/applescript/apps/runner_vanilla.html) to read EyeTV's
-  metadata. 
+To enable Atomic Parsley, set the property “ENABLE_ATOMIC_PARSLEY” to true.
+
+The script expects this program to be installed at the location "/usr/local/bin/atomicparsley". You can specify a 
+  different location by setting the property "ATOMIC_PARSLEY_CLI".
 
 
 Properties
 ----------
+(see also Externalizing Properties below)
+
 * ENABLE_PROGRAM_DELETION: if set to true, the script will delete the recording from EyeTV once it is successfully
   exported. IF a recording is not successfully exported, the recording will remain in EyeTV.
 
@@ -92,6 +94,15 @@ Properties
 
 * TEST_MODE: If set to "true", the script will execute the test() function rather than the export_recording() function.
   Use this if you need to debug a particular part of the script without modifying the main code.
+
+
+Externalizing Properties
+---------------------
+You can externalize all of the properties in a .plist file, so that you don’t have to edit the script to customize your settings.
+
+To do this, copy the “Export To Plex.plist.example” file to “Export To Plex.plist”, make your changes, then save the file in the same location as the script.
+
+You can delete any entry in this file to allow the script to use the default values. We recommend that you only include the values that you need to customize, so that any changes to the defaults are automatically inherited.
 
 
 Configuring Handbrake

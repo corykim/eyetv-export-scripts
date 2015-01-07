@@ -136,6 +136,11 @@ Configuring Turbo.264
   							a recording. The maximum number of attempts before the script exits is defined with this
   							property.
 
+Support
+-------
+This software is provided as-is, but you may request support from the volunteers at the Plex Support Forum. The thread for this
+script is accessible here: <https://forums.plex.tv/index.php/topic/105404-new-script-to-integrate-eyetv-and-plex/>
+
 
 Acknowledgements
 ----------------

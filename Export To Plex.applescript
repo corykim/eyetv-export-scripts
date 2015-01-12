@@ -108,6 +108,10 @@ on LoadProperties()
 		tell application "System Events"
 			tell property list file thePListPath
 				tell contents
+					if value of property list item "LOG_FILENAME" exists then
+						set LOG_FILENAME to value of property list item "LOG_FILENAME"
+						set SHELL_SCRIPT_SUFFIX to " >> " & LOG_FILENAME & " 2>&1"
+					end if
 					if value of property list item "ENABLE_PROGRAM_DELETION" exists then
 						set ENABLE_PROGRAM_DELETION to value of property list item "ENABLE_PROGRAM_DELETION"
 					end if
@@ -147,10 +151,6 @@ on LoadProperties()
 					if value of property list item "SOURCE_TYPE" exists then
 						set SOURCE_TYPE to value of property list item "SOURCE_TYPE"
 					end if
-					if value of property list item "LOG_FILENAME" exists then
-						set LOG_FILENAME to value of property list item "LOG_FILENAME"
-						set SHELL_SCRIPT_SUFFIX to " >> " & LOG_FILENAME & " 2>&1"
-					end if
 					if value of property list item "TEST_MODE" exists then
 						set TEST_MODE to value of property list item "TEST_MODE"
 					end if
@@ -158,6 +158,34 @@ on LoadProperties()
 			end tell
 		end tell
 	end if
+
+	write_log("")
+	write_log("---------------------------------------")
+	write_log("Properties:")
+	write_log("ENABLE_PROGRAM_DELETION: " & ENABLE_PROGRAM_DELETION)
+	write_log("TARGET_PATH: " & TARGET_PATH)
+	write_log("TARGET_TYPE: " & TARGET_TYPE)
+	write_log("SOURCE_TYPE: " & SOURCE_TYPE)
+	write_log("TEMP_PATH: " & TEMP_PATH)
+	write_log("LOG_FILENAME: " & LOG_FILENAME)
+	write_log("SHELL_SCRIPT_SUFFIX" & SHELL_SCRIPT_SUFFIX)
+	write_log("TEST_MODE: " & TEST_MODE)
+	write_log("ENABLE_TURBO_264: " & ENABLE_TURBO_264)
+	if ENABLE_TURBO_264 then
+		write_log("TURBO_264_PRESET: " & TURBO_264_PRESET)
+		write_log("TURBO_264_MAX_ATTEMPTS: " & TURBO_264_MAX_ATTEMPTS)
+	else
+		write_log("HANDBRAKE_CLI: " & HANDBRAKE_CLI)
+		write_log("HANDBRAKE_PARAMETERS: " & HANDBRAKE_PARAMETERS)
+	end if
+	write_log("ENABLE_ATOMIC_PARSLEY: " & ENABLE_ATOMIC_PARSLEY)
+	if ENABLE_ATOMIC_PARSLEY then
+		write_log("ATOMIC_PARSLEY_CLI: " & ATOMIC_PARSLEY_CLI)
+	end if
+	write_log("PLEX_UPDATE_URL: " & PLEX_UPDATE_URL)
+	write_log("---------------------------------------")
+	write_log("")
+
 end LoadProperties
 
 

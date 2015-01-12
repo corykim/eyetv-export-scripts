@@ -100,7 +100,11 @@ Externalizing Properties
 ---------------------
 You can externalize all of the properties in a .plist file, so that you don’t have to edit the script to customize your settings.
 
-To do this, copy the “Export To Plex.plist.example” file to “Export To Plex.plist”, make your changes, then save the file in the same location as the script.
+To do this, copy the “Export To Plex.plist.example” file to “Export To Plex.plist”, make your changes, then save the file to the location: "/Applications/EyeTV.app/Contents/Resources/Export To Plex.plist"
+* If you intend to run this script manually via the AppleScript Editor, you will also need to place the .plist file in the same location as the .scpt file.
+
+* You can also create a hard link (ln), but a symbolic link will not work. (ln -s)
+
 
 You can delete any entry in this file to allow the script to use the default values. We recommend that you only include the values that you need to customize, so that any changes to the defaults are automatically inherited.
 

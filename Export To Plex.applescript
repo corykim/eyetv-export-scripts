@@ -15,18 +15,7 @@
 # If this property is set to true, the program is deleted once exporting is complete.
 property ENABLE_PROGRAM_DELETION : false
 
-# If this property is set to true, Turbo.264 will be used instead of HandBrakeCLI
-property ENABLE_TURBO_264 : false
-
-# To use Turbo.264, you must define a custom preset in the Turbo.264 application. Specify the name of your preset here
-property TURBO_264_PRESET : "Export To Plex"
-
-# If using Turbo.264, the script will make this many attempts to encode the file before giving up. This 
-# property is necessary because Turbo.264 can only be launched as a single process, so multiple recordings may
-# contend for encoding.
-property TURBO_264_MAX_ATTEMPTS : 20
-
-# only necessary if using Handbrake for encoding
+# the command to run HandBrakeCLI, not including parameters
 property HANDBRAKE_CLI : "nice -n 10 /usr/local/bin/HandBrakeCLI"
 
 # the encoding paramters to send to HandBrakeCLI
@@ -206,6 +195,8 @@ on export_recording(the_recording)
 	write_log("Temp file location is " & output_file)
 	
 	if ENABLE_TURBO_264 then
+		# IMPORTANT: The function export_with_turbo_264 is deprecated. In order to use it, you MUST uncomment the code within that function
+		# or it will not work!
 		export_with_turbo_264(input_file, output_file)
 	else
 		export_with_handbrake(input_file, output_file)
@@ -241,52 +232,6 @@ on export_recording(the_recording)
 end export_recording
 
 
-#CK: Exports a recording using Turbo.264
-on export_with_turbo_264(input_file, output_file)
-	write_log("Exporting with Turbo.264...")
-	try
-		tell application "Turbo.264 HD"
-			set add_success to false
-			set attempt_count to 0
-			repeat while (add_success is not true and attempt_count < TURBO_264_MAX_ATTEMPTS)
-				if isEncoding then
-					my write_log("Waiting for previous encoding job to complete...")
-					repeat while isEncoding
-						delay 30
-					end repeat
-					my write_log("Previous encoding job has completed.")
-				end if
-				try
-					set attempt_count to attempt_count + 1
-					my write_log("Initiating encoding job for " & input_file & " (Attempt #" & attempt_count & " of " & TURBO_264_MAX_ATTEMPTS & ")")
-					add file POSIX path of input_file exporting as custom with custom setting TURBO_264_PRESET with destination POSIX path of output_file with replacing
-					set add_success to true
-				on error
-					my write_log("Attempt #" & attempt_count & " to add file to turbo.264 queue failed.")
-					my write_log("Error code: " & lastErrorCode)
-					delay 30
-				end try
-			end repeat
-			
-			if (add_success is true) then
-				encode with no error dialogs
-				my write_log("Waiting for export to complete...")
-				
-				repeat while (isEncoding or my file_exists(output_file) is false)
-					delay 1
-				end repeat
-			else
-				my write_log("Failed to queue job for " & input_file & " after " & attempt_count & " attempts.")
-			end if
-		end tell
-		write_log("Export complete.")
-	on error
-		write_log("ERROR: failed to export with Turbo.264!")
-		tell application "Turbo.264 HD"
-			my write_log("Error code: " & lastErrorCode)
-		end tell
-	end try
-end export_with_turbo_264
 
 
 #CK: Exports a recording using HandBrakeCLI
@@ -573,4 +518,72 @@ on MyParentPath()
 		POSIX path of (container of (path to me) as text)
 	end tell
 end MyParentPath
+
+
+
+
+
+
+
+# If this property is set to true, Turbo.264 will be used instead of HandBrakeCLI
+# NOTE: ENABLE_TURBO_264 is deprecated. If you intend to use this feature, you will need to 
+# uncomment the code within the function export_with_turbo_264!
+property ENABLE_TURBO_264 : false
+
+# To use Turbo.264, you must define a custom preset in the Turbo.264 application. Specify the name of your preset here
+property TURBO_264_PRESET : "Export To Plex"
+
+# If using Turbo.264, the script will make this many attempts to encode the file before giving up. This 
+# property is necessary because Turbo.264 can only be launched as a single process, so multiple recordings may
+# contend for encoding.
+property TURBO_264_MAX_ATTEMPTS : 20
+
+#CK: Exports a recording using Turbo.264
+on export_with_turbo_264(input_file, output_file)
+	write_log("Exporting with Turbo.264 is deprecated. Please uncomment this function to use it.")
+	(*
+	try
+		tell application "Turbo.264 HD"
+			set add_success to false
+			set attempt_count to 0
+			repeat while (add_success is not true and attempt_count < TURBO_264_MAX_ATTEMPTS)
+				if isEncoding then
+					my write_log("Waiting for previous encoding job to complete...")
+					repeat while isEncoding
+						delay 30
+					end repeat
+					my write_log("Previous encoding job has completed.")
+				end if
+				try
+					set attempt_count to attempt_count + 1
+					my write_log("Initiating encoding job for " & input_file & " (Attempt #" & attempt_count & " of " & TURBO_264_MAX_ATTEMPTS & ")")
+					add file POSIX path of input_file exporting as custom with custom setting TURBO_264_PRESET with destination POSIX path of output_file with replacing
+					set add_success to true
+				on error
+					my write_log("Attempt #" & attempt_count & " to add file to turbo.264 queue failed.")
+					my write_log("Error code: " & lastErrorCode)
+					delay 30
+				end try
+			end repeat
+			
+			if (add_success is true) then
+				encode with no error dialogs
+				my write_log("Waiting for export to complete...")
+				
+				repeat while (isEncoding or my file_exists(output_file) is false)
+					delay 1
+				end repeat
+			else
+				my write_log("Failed to queue job for " & input_file & " after " & attempt_count & " attempts.")
+			end if
+		end tell
+		write_log("Export complete.")
+	on error
+		write_log("ERROR: failed to export with Turbo.264!")
+		tell application "Turbo.264 HD"
+			my write_log("Error code: " & lastErrorCode)
+		end tell
+	end try
+	*)
+end export_with_turbo_264
 

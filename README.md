@@ -47,9 +47,11 @@ This script has some dependencies in order to run.
     setting by modifying the property "HANDBRAKE_CLI"
 
   - If you have a Turbo.264, you can enable support for this program by changing the property "ENABLE_TURBO_264" to 
-  	"true". You will also need to create a custom preset in the Turbo.264 application that will be used by this script
+  	"true". *You will also need to uncomment the code inside the function "export_with_turbo_264".* Then you need to create
+    a custom preset in the Turbo.264 application that will be used by this script
   	to export the recordings. The default name of the custom preset is "Export To Plex", but you can create any custom
   	preset and supply its name in the property "TURBO_264_PRESET".
+
 
 * Optionally, the script uses Atomic Parsley (http://atomicparsley.sourceforge.net) to set metadata on the exported file. This is useful if Plex is unable to lookup the metadata of the file based on the filename. This feature only works with .mp4 and .m4v files.
 

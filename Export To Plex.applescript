@@ -51,6 +51,21 @@ property SHELL_SCRIPT_SUFFIX : " >> " & LOG_FILENAME & " 2>&1"
 # this enables testing mode
 property TEST_MODE : false
 
+# If this property is set to true, Turbo.264 will be used instead of HandBrakeCLI
+# NOTE: ENABLE_TURBO_264 is deprecated. If you intend to use this feature, you will need to 
+# uncomment the code within the function export_with_turbo_264!
+property ENABLE_TURBO_264 : false
+
+# To use Turbo.264, you must define a custom preset in the Turbo.264 application. Specify the name of your preset here
+property TURBO_264_PRESET : "Export To Plex"
+
+# If using Turbo.264, the script will make this many attempts to encode the file before giving up. This 
+# property is necessary because Turbo.264 can only be launched as a single process, so multiple recordings may
+# contend for encoding.
+property TURBO_264_MAX_ATTEMPTS : 20
+
+
+
 # this will trigger the script when a recording is finished. To do so, place this script in the path: /Library/Application Support/EyeTV/Scripts/TriggeredScripts/RecordingDone.scpt
 on RecordingDone(recordingID)
 	LoadProperties()
@@ -147,7 +162,7 @@ on LoadProperties()
 			end tell
 		end tell
 	end if
-
+	
 	write_log("")
 	write_log("---------------------------------------")
 	write_log("Properties:")
@@ -174,7 +189,7 @@ on LoadProperties()
 	write_log("PLEX_UPDATE_URL: " & PLEX_UPDATE_URL)
 	write_log("---------------------------------------")
 	write_log("")
-
+	
 end LoadProperties
 
 
@@ -524,19 +539,6 @@ end MyParentPath
 
 
 
-
-# If this property is set to true, Turbo.264 will be used instead of HandBrakeCLI
-# NOTE: ENABLE_TURBO_264 is deprecated. If you intend to use this feature, you will need to 
-# uncomment the code within the function export_with_turbo_264!
-property ENABLE_TURBO_264 : false
-
-# To use Turbo.264, you must define a custom preset in the Turbo.264 application. Specify the name of your preset here
-property TURBO_264_PRESET : "Export To Plex"
-
-# If using Turbo.264, the script will make this many attempts to encode the file before giving up. This 
-# property is necessary because Turbo.264 can only be launched as a single process, so multiple recordings may
-# contend for encoding.
-property TURBO_264_MAX_ATTEMPTS : 20
 
 #CK: Exports a recording using Turbo.264
 on export_with_turbo_264(input_file, output_file)

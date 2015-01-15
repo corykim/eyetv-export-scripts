@@ -311,16 +311,16 @@ on tag_metadata(the_recording, the_output_file)
 			set recording_station_name to station name of the_recording
 		end tell
 		
-		set cmd to ATOMIC_PARSLEY_CLI & " " & escape_path(the_output_file) Â
-			& Â
-			" --overWrite --artist \"" & program_title & Â
-			"\" --title \"" & recording_episode & Â
-			"\" --description \"" & recording_description & Â
-			"\" --longdesc \"" & recording_description & Â
-			"\" --comment \"" & recording_description & Â
-			"\" --TVNetwork \"" & recording_station_name & Â
-			"\" --TVShowName \"" & program_title & Â
-			"\" --genre \"" & "TV Shows" & Â
+		set cmd to ATOMIC_PARSLEY_CLI & " " & escape_path(the_output_file) Â¬
+			& Â¬
+			" --overWrite --artist \"" & program_title & Â¬
+			"\" --title \"" & recording_episode & Â¬
+			"\" --description \"" & recording_description & Â¬
+			"\" --longdesc \"" & recording_description & Â¬
+			"\" --comment \"" & recording_description & Â¬
+			"\" --TVNetwork \"" & recording_station_name & Â¬
+			"\" --TVShowName \"" & program_title & Â¬
+			"\" --genre \"" & "TV Shows" & Â¬
 			"\""
 		
 		if recording_season_num is not equal to "" and recording_season_num is greater than 0 then
@@ -424,7 +424,7 @@ on write_log(the_log_message)
 		tell (current date) to set timestamp to short date string & space & time string & ": "
 		try
 			set the open_target_file to open for access POSIX path of LOG_FILENAME with write permission
-			write timestamp & the_log_message & character id 10 to the open_target_file starting at eof as Çclass utf8È # 10 = linefeed
+			write timestamp & the_log_message & character id 10 to the open_target_file starting at eof as Â«class utf8Â» # 10 = linefeed
 			close access the open_target_file
 			return true
 		on error

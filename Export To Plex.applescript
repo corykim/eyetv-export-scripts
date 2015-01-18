@@ -46,7 +46,8 @@ property SOURCE_TYPE : "mpg"
 property LOG_FILENAME : "/tmp/eyetv-export-custom.log"
 
 # the shell scripts executed by this script will write logs as follows
-property SHELL_SCRIPT_SUFFIX : " >> " & LOG_FILENAME & " 2>&1"
+#property SHELL_SCRIPT_SUFFIX : " >> " & LOG_FILENAME & " 2>&1"
+property SHELL_SCRIPT_SUFFIX : "" # disabling logging of scripts as this syntax seems to launch double processes
 
 # this enables testing mode
 property TEST_MODE : false
@@ -114,7 +115,7 @@ on LoadProperties()
 				tell contents
 					if value of property list item "LOG_FILENAME" exists then
 						set LOG_FILENAME to value of property list item "LOG_FILENAME"
-						set SHELL_SCRIPT_SUFFIX to " >> " & LOG_FILENAME & " 2>&1"
+						#set SHELL_SCRIPT_SUFFIX to " >> " & LOG_FILENAME & " 2>&1"
 					end if
 					if value of property list item "ENABLE_PROGRAM_DELETION" exists then
 						set ENABLE_PROGRAM_DELETION to value of property list item "ENABLE_PROGRAM_DELETION"

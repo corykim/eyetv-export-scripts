@@ -201,9 +201,10 @@ on export_recording(the_recording)
 	
 	write_log("Exporting the recording " & recording_location)
 	
+	set oldDelimiters to AppleScript's text item delimiters
 	set AppleScript's text item delimiters to "."
 	set recording_path to text items 1 through -2 of recording_location as string
-	set AppleScript's text item delimiters to ""
+	set AppleScript's text item delimiters to oldDelimiters
 	set recording_path to POSIX path of recording_path
 	set input_file to recording_path & "." & SOURCE_TYPE as string
 	
@@ -271,10 +272,11 @@ on read_epg_info(the_recording)
 	#find a dictionary in the same directory of the recording, with a ".eyetvp" extension
 	tell application "EyeTV"
 		set recording_location to URL of the_recording as text
-		set AppleScript's text item delimiters to "."
-		set build_recording_path to text items 1 through -3 of recording_location as string
-		set AppleScript's text item delimiters to ""
-		set build_recording_path to POSIX path of build_recording_path & ".eyetv"
+		set oldDelimiters to AppleScript's text item delimiters
+		set AppleScript's text item delimiters to ":"
+		set build_recording_path to text items 1 through -2 of recording_location as string
+		set AppleScript's text item delimiters to oldDelimiters
+		set build_recording_path to POSIX path of build_recording_path
 	end tell
 	
 	set program_files to list folder build_recording_path without invisibles
@@ -445,7 +447,7 @@ end file_exists
 
 #CK formats the date to YYYY-mm-dd
 on format_date(the_date)
-	set y to year of the_date
+	set y to year of the_date as text
 	set m to left_pad_number(month of the_date as integer, 2)
 	set d to left_pad_number(day of the_date, 2)
 	return y & "-" & m & "-" & d

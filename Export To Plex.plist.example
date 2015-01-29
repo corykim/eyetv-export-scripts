@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ENABLE_TURBO_264</key>
-	<false/>
+	<key>ENABLE_TRANSCODE</key>
+	<true/>
 	<key>ENABLE_PROGRAM_DELETION</key>
 	<false/>
 	<key>TURBO_264_MAX_ATTEMPTS</key>

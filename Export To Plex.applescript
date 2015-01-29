@@ -12,6 +12,11 @@
 # - AtomicParsley (optional)
 #
 
+# If this property is set to true, the program will be transcoded. Otherwise, the program
+# will simply be moved to the export location, using Plex naming conventions. This is particularly
+# useful with newer HDHomeRun models that can transcode in hardware.
+property ENABLE_TRANSCODE : true
+
 # If this property is set to true, the program is deleted once exporting is complete.
 property ENABLE_PROGRAM_DELETION : false
 
@@ -106,6 +111,91 @@ on test(the_recording)
 	write_log("Test ends")
 end test
 
+on export_recording(the_recording)
+	tell application "EyeTV"
+		set recording_location to URL of the_recording as text
+	end tell
+	
+	write_log("Exporting the recording " & recording_location)
+	
+	set oldDelimiters to AppleScript's text item delimiters
+	set AppleScript's text item delimiters to "."
+	set recording_path to text items 1 through -2 of recording_location as string
+	set AppleScript's text item delimiters to oldDelimiters
+	set recording_path to POSIX path of recording_path
+	set input_file to recording_path & "." & SOURCE_TYPE as string
+	set output_directory to TARGET_PATH & "/" & my build_recording_path(the_recording)
+	
+	if ENABLE_TRANSCODE then
+		set export_success to false
+		set temp_file to my TEMP_PATH & "/" & build_recording_name(the_recording) & "." & TARGET_TYPE as string
+		write_log("Temp file location is " & temp_file)
+		set file_move_command to "mv -f " & escape_path(temp_file) & " " & escape_path(output_directory) & "/"
+		
+		if ENABLE_TURBO_264 then
+			# IMPORTANT: The function export_with_turbo_264 is deprecated. In order to use it, you MUST uncomment the code within that function
+			# or it will not work!
+			export_with_turbo_264(input_file, temp_file)
+		else
+			export_with_handbrake(input_file, temp_file)
+		end if
+		
+		if file_exists(temp_file) then
+			write_log("Export complete. Post-processing the file " & temp_file)
+			tag_metadata(the_recording, temp_file)
+			set export_success to true
+		end if
+	else
+		write_log("Transcoding is disabled.")
+		# no need to transcode, so the recording is the temp file also
+		set temp_file to input_file
+		
+		# rename the file to conform with Plex convention, but preserve the .mpg extension
+		set output_filename to build_recording_name(the_recording) & "." & read_file_extension(input_file)
+		set file_move_command to "cp " & escape_path(input_file) & " " & escape_path(output_directory) & "/" & escape_path(output_filename)
+		
+		set export_success to true
+	end if
+	
+	if export_success then
+		write_log("Transferring the file to the Plex directory.")
+		try
+			do shell script "mkdir -p " & escape_path(output_directory)
+			write_log(file_move_command)
+			try
+				do shell script file_move_command
+				delete_recording(the_recording)
+			on error
+				write_log("ERROR: Could not transfer the file using command:  " & file_move_command)
+			end try
+		on error
+			write_log("ERROR: Could not create the directory " & output_directory)
+		end try
+		update_plex()
+		write_log("Finished post-processing file " & temp_file)
+	else
+		write_log("ERROR: The export was not successful! " & temp_file)
+	end if
+	
+end export_recording
+
+
+
+
+#CK: Exports a recording using HandBrakeCLI
+on export_with_handbrake(input_file, output_file)
+	write_log("Exporting with HandBrake...")
+	set cmd to HANDBRAKE_CLI & " -i " & escape_path(input_file) & " -o  " & escape_path(output_file) & HANDBRAKE_PARAMETERS & SHELL_SCRIPT_SUFFIX
+	write_log(cmd)
+	try
+		do shell script cmd
+		write_log("Exporting with Handbrake completed.")
+	on error
+		write_log("ERROR: failed to export with Handbrake!")
+	end try
+end export_with_handbrake
+
+
 on LoadProperties()
 	set thePListPath to MyParentPath() & "Export To Plex.plist"
 	
@@ -116,6 +206,9 @@ on LoadProperties()
 					if value of property list item "LOG_FILENAME" exists then
 						set LOG_FILENAME to value of property list item "LOG_FILENAME"
 						#set SHELL_SCRIPT_SUFFIX to " >> " & LOG_FILENAME & " 2>&1"
+					end if
+					if value of property list item "ENABLE_TRANSCODE" exists then
+						set ENABLE_TRANSCODE to value of property list item "ENABLE_TRANSCODE"
 					end if
 					if value of property list item "ENABLE_PROGRAM_DELETION" exists then
 						set ENABLE_PROGRAM_DELETION to value of property list item "ENABLE_PROGRAM_DELETION"
@@ -167,6 +260,7 @@ on LoadProperties()
 	write_log("")
 	write_log("---------------------------------------")
 	write_log("Properties:")
+	write_log("ENABLE_TRANSCODE: " & ENABLE_TRANSCODE)
 	write_log("ENABLE_PROGRAM_DELETION: " & ENABLE_PROGRAM_DELETION)
 	write_log("TARGET_PATH: " & TARGET_PATH)
 	write_log("TARGET_TYPE: " & TARGET_TYPE)
@@ -193,76 +287,6 @@ on LoadProperties()
 	
 end LoadProperties
 
-
-on export_recording(the_recording)
-	tell application "EyeTV"
-		set recording_location to URL of the_recording as text
-	end tell
-	
-	write_log("Exporting the recording " & recording_location)
-	
-	set oldDelimiters to AppleScript's text item delimiters
-	set AppleScript's text item delimiters to "."
-	set recording_path to text items 1 through -2 of recording_location as string
-	set AppleScript's text item delimiters to oldDelimiters
-	set recording_path to POSIX path of recording_path
-	set input_file to recording_path & "." & SOURCE_TYPE as string
-	
-	set output_file to my TEMP_PATH & "/" & build_recording_name(the_recording) & "." & TARGET_TYPE as string
-	write_log("Temp file location is " & output_file)
-	
-	if ENABLE_TURBO_264 then
-		# IMPORTANT: The function export_with_turbo_264 is deprecated. In order to use it, you MUST uncomment the code within that function
-		# or it will not work!
-		export_with_turbo_264(input_file, output_file)
-	else
-		export_with_handbrake(input_file, output_file)
-	end if
-	
-	if file_exists(output_file) then
-		write_log("Export complete. Post-processing the file " & output_file)
-		
-		tag_metadata(the_recording, output_file)
-		
-		set output_directory to TARGET_PATH & "/" & my build_recording_path(the_recording)
-		try
-			do shell script "mkdir -p " & escape_path(output_directory)
-			try
-				set cmd to "mv -f " & escape_path(output_file) & " " & escape_path(output_directory) & "/"
-				write_log(cmd)
-				do shell script cmd
-				
-				delete_recording(the_recording)
-				
-			on error
-				write_log("ERROR: Could not move the file " & output_file)
-			end try
-		on error
-			write_log("ERROR: Could not create the directory " & output_directory)
-		end try
-		update_plex()
-		write_log("Finished post-processing file " & output_file)
-	else
-		write_log("ERROR: The exported file was not created! " & output_file)
-	end if
-	
-end export_recording
-
-
-
-
-#CK: Exports a recording using HandBrakeCLI
-on export_with_handbrake(input_file, output_file)
-	write_log("Exporting with HandBrake...")
-	set cmd to HANDBRAKE_CLI & " -i " & escape_path(input_file) & " -o  " & escape_path(output_file) & HANDBRAKE_PARAMETERS & SHELL_SCRIPT_SUFFIX
-	write_log(cmd)
-	try
-		do shell script cmd
-		write_log("Exporting with Handbrake completed.")
-	on error
-		write_log("ERROR: failed to export with Handbrake!")
-	end try
-end export_with_handbrake
 
 
 #CK: reads the XML metadata and returns only the epg info
@@ -314,17 +338,7 @@ on tag_metadata(the_recording, the_output_file)
 			set recording_station_name to station name of the_recording
 		end tell
 		
-		set cmd to ATOMIC_PARSLEY_CLI & " " & escape_path(the_output_file) ¬
-			& ¬
-			" --overWrite --artist \"" & program_title & ¬
-			"\" --title \"" & recording_episode & ¬
-			"\" --description \"" & recording_description & ¬
-			"\" --longdesc \"" & recording_description & ¬
-			"\" --comment \"" & recording_description & ¬
-			"\" --TVNetwork \"" & recording_station_name & ¬
-			"\" --TVShowName \"" & program_title & ¬
-			"\" --genre \"" & "TV Shows" & ¬
-			"\""
+		set cmd to ATOMIC_PARSLEY_CLI & " " & escape_path(the_output_file) & " --overWrite --artist \"" & program_title & "\" --title \"" & recording_episode & "\" --description \"" & recording_description & "\" --longdesc \"" & recording_description & "\" --comment \"" & recording_description & "\" --TVNetwork \"" & recording_station_name & "\" --TVShowName \"" & program_title & "\" --genre \"" & "TV Shows" & "\""
 		
 		if recording_season_num is not equal to "" and recording_season_num is greater than 0 then
 			set cmd to cmd & " --TVSeasonNum \"" & recording_season_num & "\""
@@ -408,6 +422,15 @@ on build_recording_name(the_recording)
 	
 	return filename
 end build_recording_name
+
+# reads the file extension of a filename, such as "mpg"
+on read_file_extension(the_filename)
+	set oldDelimiters to AppleScript's text item delimiters
+	set AppleScript's text item delimiters to "."
+	set the_file_extension to text items -1 through -1 of the_filename as string
+	set AppleScript's text item delimiters to oldDelimiters
+	return the_file_extension
+end read_file_extension
 
 
 #CK: invoke's Plex Media Server's update URL

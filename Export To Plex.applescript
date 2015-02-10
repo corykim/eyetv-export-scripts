@@ -128,9 +128,11 @@ on export_recording(the_recording)
 	
 	if ENABLE_TRANSCODE then
 		set export_success to false
+		
+		# we split this into a partial file and the full filename so that we can try to match the file
+		# if the extension was not what we expected
 		set temp_file to my TEMP_PATH & "/" & build_recording_name(the_recording) & "." & TARGET_TYPE as string
 		write_log("Temp file location is " & temp_file)
-		set file_move_command to "mv -f " & escape_path(temp_file) & " " & escape_path(output_directory) & "/"
 		
 		if ENABLE_TURBO_264 then
 			# IMPORTANT: The function export_with_turbo_264 is deprecated. In order to use it, you MUST uncomment the code within that function
@@ -140,10 +142,13 @@ on export_recording(the_recording)
 			export_with_handbrake(input_file, temp_file)
 		end if
 		
-		if file_exists(temp_file) then
+		set the_match to file_matches(temp_file)
+		if the_match is not null then
+			set temp_file to the_match as text
 			write_log("Export complete. Post-processing the file " & temp_file)
 			tag_metadata(the_recording, temp_file)
 			set export_success to true
+			set file_move_command to "mv -f " & escape_path(temp_file) & " " & escape_path(output_directory) & "/"
 		end if
 	else
 		write_log("Transcoding is disabled.")
@@ -468,6 +473,30 @@ on file_exists(the_filename)
 	tell application "System Events" to set fileExists to exists disk item (the_filename)
 end file_exists
 
+#CK determines if a file matches the requested file, disregarding the extension. The function will return the matching filename as string, or null if no match was found
+on file_matches(the_filename)
+	set oldDelimiters to AppleScript's text item delimiters
+	set AppleScript's text item delimiters to "/"
+	set the_path to text items 1 through -2 of the_filename as string
+	set the_filename to last item of text items of the_filename as string
+	
+	set AppleScript's text item delimiters to "."
+	set the_filebase to first item of text items of the_filename & "." as string
+	set AppleScript's text item delimiters to oldDelimiters
+	set the_path to POSIX path of the_path
+	
+	set the_match to null
+	
+	tell application "System Events"
+		set matches to every file of disk item (the_path) whose name begins with the_filebase
+		if matches is not {} then
+			set the_match to POSIX path of the first item of matches as string
+		end if
+	end tell
+	
+	return the_match
+end file_matches
+
 #CK formats the date to YYYY-mm-dd
 on format_date(the_date)
 	set y to year of the_date as text
@@ -559,6 +588,12 @@ on MyParentPath()
 		POSIX path of (container of (path to me) as text)
 	end tell
 end MyParentPath
+
+
+
+
+
+
 
 
 

@@ -78,10 +78,14 @@ Properties
 
 * TEMP_PATH: In order to avoid having Plex index an incompletely tagged recording, we use a temporary directory for 
   writing the export and applying the metadata. This directory should be writable by the user account running EyeTV,
-  and should not be monitored by Plex at all.
+  and should not be monitored by Plex at all. 
+
+Note: This must be an absolute path. Do not begin this path with “~”.
 
 * TARGET_PATH: The directory that Plex will be looking for your recordings. This directory must be writable by the 
-  account running EyeTV.
+  account running EyeTV. 
+
+Note: This must be an absolute path. Do not begin this path with “~”.
 
 * TARGET_TYPE: For HandbrakeCLI, you can change the container type to .mkv or something else. It doesn't appear that
   Turbo.264 will allow you to use a container other than .mp4.
@@ -89,7 +93,9 @@ Properties
 * SOURCE_TYPE: The source type that is being recorded by EyeTV. You should not need to change this.
 
 * LOG_FILENAME: The file to which all log information will be written. This file should be writable by the account that
-  runs EyeTV.
+  runs EyeTV. 
+
+Note: This must be an absolute path. Do not begin this path with “~”.
 
 * SHELL_SCRIPT_SUFFIX: This script runs a number of shell commands, such as HandbrakeCLI and AtomicParsley. The default
   suffix causes any commands to write their STDOUT and STDERR to the LOG_FILENAME.  

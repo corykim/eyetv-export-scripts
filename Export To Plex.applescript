@@ -38,9 +38,11 @@ property ATOMIC_PARSLEY_CLI : "/usr/local/bin/atomicparsley"
 property PLEX_UPDATE_URL : "http://127.0.0.1:32400/library/sections/2/refresh?turbo=1"
 
 # all exports will be written to this path, then moved to the TARGET_PATH after export is complete
+# Note: This must be an absolute path. Do not begin this path with “~”.
 property TEMP_PATH : "/path/to/temp/files"
 
 # all exports will be moved to this path when complete
+# Note: This must be an absolute path. Do not begin this path with “~”.
 property TARGET_PATH : "/path/to/plex/tv/library"
 
 # if you change this setting, Turbo.264 may still output .mp4, so don't change it if using Turbo.264
@@ -48,6 +50,7 @@ property TARGET_TYPE : "mkv"
 property SOURCE_TYPE : "mpg"
 
 # log statements will be written to this file
+# Note: This must be an absolute path. Do not begin this path with “~”.
 property LOG_FILENAME : "/tmp/eyetv-export-custom.log"
 
 # the shell scripts executed by this script will write logs as follows

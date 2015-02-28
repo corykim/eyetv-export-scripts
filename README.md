@@ -65,6 +65,13 @@ Properties
 ----------
 (see also Externalizing Properties below)
 
+* ENABLE_TRANSCODE: if set to true, the script will transcode using either HandBrakeCLI or Turbo.264, as specified in the respective properties. If set to false, the script will copy and rename the existing EyeTV recording, moving the script to the expected Plex location and renaming according to Plex naming conventions.
+
+* TARGET_PATH: The directory that Plex will be looking for your recordings. This directory must be writable by the 
+  account running EyeTV. 
+
+Note: This must be an absolute path. Do not begin this path with “~”.
+
 * ENABLE_PROGRAM_DELETION: if set to true, the script will delete the recording from EyeTV once it is successfully
   exported. IF a recording is not successfully exported, the recording will remain in EyeTV.
 
@@ -76,14 +83,7 @@ Properties
   To determine the section number on your Plex server, launch the management UI, view the TV library that you are going
   to import these recordings into, and take note of the number after "/section/" in your browser's location bar.	
 
-* TEMP_PATH: In order to avoid having Plex index an incompletely tagged recording, we use a temporary directory for 
-  writing the export and applying the metadata. This directory should be writable by the user account running EyeTV,
-  and should not be monitored by Plex at all. 
-
-Note: This must be an absolute path. Do not begin this path with “~”.
-
-* TARGET_PATH: The directory that Plex will be looking for your recordings. This directory must be writable by the 
-  account running EyeTV. 
+* TEMP_PATH: In order to avoid having Plex index an incompletely transcoded and tagged recording, we use a temporary directory for writing the export and applying the metadata. This directory should be writable by the user account running EyeTV, and should not be monitored by Plex at all. 
 
 Note: This must be an absolute path. Do not begin this path with “~”.
 

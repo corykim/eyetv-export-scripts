@@ -38,7 +38,7 @@ Dependencies
 -------------
 This script has some dependencies in order to run.
 
-* In order to transcode the MPEG2 recording files to MP4 format, you will need either HandbrakeCLI or a Turbo.264.
+* If you want to transcode the MPEG2 recording files to MP4 format, you will need either HandbrakeCLI or a Turbo.264.
 
   - HandBrakeCLI is a command-line utility that incorporates most of the functions of the Handbrake application.
     It is available at: http://handbrake.fr/downloads2.php
